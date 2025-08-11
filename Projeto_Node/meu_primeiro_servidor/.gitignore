@@ -1,0 +1,22 @@
+# Arquivo gerado pelo Guru da Programação para um projeto Node.js + TypeScript
+
+# Dependências do Node
+# A pasta node_modules é gigante e pode ser recriada com 'npm install'
+node_modules/
+
+# Arquivos de Build/Compilação
+# A pasta dist é gerada automaticamente a partir do nosso código TypeScript
+dist/
+
+# Arquivos de Variáveis de Ambiente
+# Contém segredos como senhas e chaves de API. NUNCA deve ir para o Git!
+.env
+
+# Logs
+# Arquivos de log gerados durante a execução ou depuração
+*.log
+npm-debug.log*
+
+# Arquivos de configuração do Sistema Operacional e Editores
+.DS_Store
+.vscode/
