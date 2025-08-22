@@ -6,7 +6,9 @@ import 'dotenv/config';
 // Importa os plugins criados
 import { AppError } from './errors/AppError';
 import { helloRoutes } from './routes/hello';
-import { users } from './routes/users';
+//import { users } from './routes/users';
+import { usersRoutes } from './routes/users';
+import { client, db } from './db/connection'; // Importa nossa conexão.
 
 // Cria uma instância do Fastify.
 // A constante 'app' representa nosso servidor.
@@ -15,6 +17,13 @@ const app = Fastify({
   // Ativá-lo (true) nos ajuda a ver o que está acontecendo no servidor,
   // como requisições chegando e erros.
   logger: true,
+});
+
+app.decorate('db', db);
+
+app.addHook('onClose', (instance,done) => {
+  client.end();
+  done();
 });
 
 // Registra o manipulador de erros
@@ -39,7 +48,7 @@ app.setErrorHandler((error, request, reply) => {
 
 // O método .register() é como "encaixamos" a nossa caixa de Lego.
 app.register(helloRoutes, { prefix: '/api/v1' });
-app.register(users, { prefix: '/api/v2' });
+app.register(usersRoutes);
 
 // Função principal para iniciar o servidor.
 // Usa-se async/await para lidar com a natureza assíncrona do Node.js.

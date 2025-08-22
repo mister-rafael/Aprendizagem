@@ -1,0 +1,51 @@
+# docker-compose.yml
+# 'services' é a seção onde definimos os "contêineres" da nossa aplicação.
+services:
+  # --- SERVIÇO 01: NOSSO BANCO DE DADOS --- 
+  # 'postgres_db' é o nome que estamos dando ao nosso serviço de banco de dados.
+  postgres_db:
+    # 'image' define a "receita" que o Docker usará. Aqui, a imagem oficial do 
+    # Postgres, na versão 16, usando a base 'alpine', que é super leve.
+    image: postgres:16-alpine
+    # 'container_name' é um nome amigável que daremos ao contêiner quando ele estiver rodando.
+    container_name: drizzle-postgres
+    # 'ports' mapeia a porta do seu computador (host) para a porta do contêiner.
+    # "5432:5432" significa: encaminhe todo o tráfego da porta 5432 da minha máquina
+    # para a porta 5432 DENTRO do contêiner do Postgres.
+    ports:
+      - "5432:5432"
+    # 'environment' define as variáveis de ambiente necessárias para inicializar o Postgres.
+    # Estamos configurando o usuário, a senha e o nome do banco de dados inicial.
+    environment:
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=appdb
+    # 'volumes' garantem que nossos dados persistam mesmo se o contêiner for removido.
+    # Pense nisso como um "HD externo" para o nosso contêiner.
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # Adicionamos esta linha para conectar o serviço à nossa rede customizada
+    networks:
+      - meu_app_network
+  # -- SERVIÇO 02: O NOVO VIZINHO (ADMINER) ---
+  adminer:
+    #Imagem oficial do Adminer
+    image: adminer
+    container_name: my-adminer
+    ports:
+      # Mapeia a porta 8080 da nossa máquina para a porta 8080 do contêiner do Adminer
+      - "8080:8080"
+    networks:
+      - meu_app_network
+    # 'depends_on' garante que o Adminer só será iniciado DEPOIS que o 
+    # contêiner do postgres_db estiver de pé.
+    depends_on:
+      - postgres_db
+# Aqui definimos o volume que declaramos acima, deixando o Docker gerenciá-lo.
+volumes:
+  postgres_data:
+    # 'networks' é onde definimos as "ruas" do nosso condomínio, permitindo que os
+    # contêineres conversem entre si.
+networks:
+  meu_app_network:
+    driver: bridge
