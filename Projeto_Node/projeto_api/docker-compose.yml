@@ -1,0 +1,31 @@
+# Este arquivo é como uma lista de ingredientes e o modo de preparo para o Docker.
+services:
+  # Este é o nome do nosso serviço/contêiner
+  db:
+    # A imagem que queremos usar. Estamos pegando a versão 16 do Postgres.
+    image: postgres:16
+    # O nome que daremos ao contêiner depois que ele for criado.
+    container_name: postgres_db_guru
+    # Reinicia o contêiner automaticamente se ele parar.
+    restart: always
+    # Aqui definimos as variáveis de ambiente para o banco de dados.
+    # IMPORTANTE: Em um projeto real, nunca coloque senhas diretamente aqui.
+    # Usaríamos arquivos .env, mas para didática, vamos simplificar.
+    environment:
+      - POSTGRES_USER=guru
+      - POSTGRES_PASSWORD=guru_password
+      - POSTGRES_DB=guru_api
+    # Mapeia a porta 5432 do contêiner para a porta 5432 da sua máquina.
+    # Assim, nossa aplicação Node.js poderá se conectar ao banco.
+    ports:
+      - "5432:5432"
+    # O volume garante que os dados do seu banco não sejam perdidos
+    # se o contêiner for recriado. Ele mapeia uma pasta no seu computador
+    # para a pasta de dados dentro do contêiner.
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+
+# Define a rede que os contêineres usarão para se comunicar
+networks:
+  default:
+    driver: bridge

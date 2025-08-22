@@ -1,0 +1,13 @@
+//Este arquivo é o "manual de regras" para o nosso compilador TypeScript.
+{
+  "compilerOptions": {
+    "target": "es2023", // A versão do JavaScript que será gerada
+    "module": "CommonJS", // O sistema de módulos do Node.js
+    "rootDir": "./src", // Onde está nosso código TypeScript
+    "outDir": "./dist", // Onde o JavaScript compilado será salvo (não usaremos muito com o tsx)
+    "esModuleInterop": true, // Permite compatibilidade entre diferentes tipos de módulos
+    "forceConsistentCasingInFileNames": true, // Garante que os nomes dos arquivos sejam consistentes
+    "strict": true, // Habilita todas as checagens de tipo mais rigorosas (uma ótima prática!)
+    "skipLibCheck": true // Pula a verificação de tipos em arquivos de declaração (.d.ts)
+  }
+}
