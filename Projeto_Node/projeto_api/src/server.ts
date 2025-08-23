@@ -1,7 +1,7 @@
 // Ponto de entrada da Aplicação.
 import 'dotenv/config' // <-- ESSA DEVE SER A PRIMEIRA LINHA DO ARQUIVO
 import fastify from "fastify"
-import { userRoutes } from './modules/users/user.controller' // 1. Importar as rotas
+import { userRoutes } from './modules/routes/user.controller' // 1. Importar as rotas
 
 const app = fastify({
     logger: true, // Liga o logger para vermos as requisições no terminal

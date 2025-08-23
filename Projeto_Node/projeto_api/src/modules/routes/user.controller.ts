@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
-import { UserService } from './user.service'
+import { UserService } from '../services/user.service'
 
 // Criamos uma instância do nosso service para que os handlers das rotas possam usá-la.
 const userService = new UserService()
