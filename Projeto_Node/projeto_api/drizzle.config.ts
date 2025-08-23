@@ -3,7 +3,7 @@ import 'dotenv/config' // Importa o dotenv para carregar as variáveis de ambien
 
 export default defineConfig({
   schema: './src/db/schema.ts', // Onde está nossa "planta"
-  out: './drizzle', // Pasta onde os arquivos de migração serão gerados
+  out: './static/migrations', // Pasta onde os arquivos de migração serão gerados
   dialect: 'postgresql', // O "dialeto" do banco que estamos usando. Ou seja, qual lingua falar.
   dbCredentials: {
     // As credenciais para o Drizzle Kit se conectar ao banco.

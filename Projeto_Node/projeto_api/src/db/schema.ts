@@ -1,5 +1,7 @@
 // O schema é a definição das tabelas em formato de código TypeScript. É a "planta baixa".
 import { pgTable, serial, varchar, timestamp } from 'drizzle-orm/pg-core'
+// Importar aqui as rotas criadas na pasta /src/modules/routes.
+
 
 // Aqui estamos definindo a "planta" da nossa tabela de usuários
 export const users = pgTable('users', {

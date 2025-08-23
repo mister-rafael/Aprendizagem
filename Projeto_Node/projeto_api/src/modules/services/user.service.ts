@@ -8,6 +8,10 @@ type CreateUserDTO = {
   name: string
   email: string
 }
+type UpdateUserDTO = {
+  name?: string // O '?' torna os campos opcionais
+  email?: string
+}
 
 export class UserService {
   // --- Método para buscar todos os usuários ---
@@ -17,7 +21,6 @@ export class UserService {
     const allUsers = await db.select().from(users)
     return allUsers
   }
-
   // --- Método para criar um novo usuário ---
   async create(data: CreateUserDTO) {
     // 1. LÓGICA DE NEGÓCIO: Verificar se o e-mail já existe.
@@ -42,5 +45,42 @@ export class UserService {
 
     // .returning() sempre devolve um array, então pegamos o primeiro elemento.
     return newUser[0]
+  }
+  // --- Método para atualizar um usuário ---
+  async update(id: number, data: UpdateUserDTO) {
+    // 1. LÓGICA DE NEGÓCIO: Verificar se o usuário existe antes de atualizar.
+    const userToUpdate = await db.query.users.findFirst({
+      where: eq(users.id, id),
+    })
+    // Lança uma mensagem de erro, se o usuário não for encontrado na base
+    if (!userToUpdate) {
+      throw new Error('Usuário não encontrado.')
+    }
+    // 2. AÇÃO NO BANCO: Atualizar o usuário.
+    const updateUser = await db
+      .update(users) // Comando sql que informa qual a tabela que iremos atualizar
+      .set({
+        //valores para atualizar
+        ...data, // Usa os dados recebidos para o update
+        updatedAt: new Date(), // Atualiza a data de modificação
+      })
+      .where(eq(users.id, id)) // Especifica QUAL usuário atualizar
+      .returning()
+    return updateUser[0]
+  }
+  // --- Método para deletar um usuário ---
+  async delete(id: number) {
+    // 1. LÓGICA DE NEGÓCIO: Verificar se o usuário existe antes de deletar.
+    const userToDelete = await db.query.users.findFirst({
+      where: eq(users.id, id),
+    })
+    // Lança uma mensagem de erro, se o usuário não for encontrado na base
+    if (!userToDelete) {
+      throw new Error('Usuário não encontrado.')
+    }
+    // 2. AÇÃO NO BANCO: Deletar o usuário.
+    await db.delete(users).where(eq(users.id, id))
+
+    return { message: 'Usuário deletado com sucesso.' }
   }
 }
