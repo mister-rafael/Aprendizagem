@@ -1,18 +1,9 @@
 import { db } from '../../db' // Importa nosso "tradutor-chefe"
 import { users } from '../../db/schema' // Importa a "planta" da tabela
 import { eq } from 'drizzle-orm' // Uma ferramenta do Drizzle para criar condições (ex: WHERE email = '...')
+import { CreateUserDTO, UpdateUserDTO } from '../routes/user.controller' // Importação do DTO (Data Transfer Object)
 
-// DTO (Data Transfer Object) - É uma boa prática criar um "molde"
-// para os dados que esperamos receber em nossas funções.
-type CreateUserDTO = {
-  name: string
-  email: string
-}
-type UpdateUserDTO = {
-  name?: string // O '?' torna os campos opcionais
-  email?: string
-}
-
+// Regras de negócios para os usuário.
 export class UserService {
   // --- Método para buscar todos os usuários ---
   async getAll() {
@@ -27,11 +18,10 @@ export class UserService {
     const existingUser = await db.query.users.findFirst({
       where: eq(users.email, data.email),
     })
-
+    // Aciona o alarme de erro para que o tratador global atue.
     if (existingUser) {
       throw new Error('Este e-mail já está em uso.')
     }
-
     // 2. AÇÃO NO BANCO: Inserir o novo usuário.
     const newUser = await db
       .insert(users)
@@ -79,6 +69,7 @@ export class UserService {
       throw new Error('Usuário não encontrado.')
     }
     // 2. AÇÃO NO BANCO: Deletar o usuário.
+  // Vai deletar da tabela "users" o registro cujo id é iguala ao id passado como parâmetro.
     await db.delete(users).where(eq(users.id, id))
 
     return { message: 'Usuário deletado com sucesso.' }
