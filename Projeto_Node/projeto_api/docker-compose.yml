@@ -1,6 +1,20 @@
 # Este arquivo é como uma lista de ingredientes e o modo de preparo para o Docker.
 services:
-  # Este é o nome do nosso serviço/contêiner
+  # Serviço de API
+  api:
+    # Em vez de 'image', usamos 'build: .'. Isso diz ao Compose para
+    # construir uma imagem usando o Dockerfile que está nesta pasta.
+    build: .
+    container_name: guru_api_app
+    ports:
+      # Mapeia a porta 3333 da nossa máquina para a porta 3333 do contêiner.
+      - "3333:3333"
+    env_file:
+      - .env.docker
+    # Garante que o contêiner do banco de dados (db) suba ANTES do da api.
+    depends_on:
+      - db
+    # Este é o nome do nosso serviço/contêiner
   db:
     # A imagem que queremos usar. Estamos pegando a versão 16 do Postgres.
     image: postgres:16
@@ -23,9 +37,9 @@ services:
     # se o contêiner for recriado. Ele mapeia uma pasta no seu computador
     # para a pasta de dados dentro do contêiner.
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      # nome do volume é gerenciado pelo Docker, uma prática um pouco melhor.
+      - pgdata:/var/lib/postgresql/data
 
-# Define a rede que os contêineres usarão para se comunicar
-networks:
-  default:
-    driver: bridge
+# O Docker gerencia o volume para nós.
+volumes:
+  pgdata: # <-- Aqui estamos "declarando" a existência do armário.
