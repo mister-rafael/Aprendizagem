@@ -9,5 +9,9 @@
     "forceConsistentCasingInFileNames": true, // Garante que os nomes dos arquivos sejam consistentes
     "strict": true, // Habilita todas as checagens de tipo mais rigorosas (uma ótima prática!)
     "skipLibCheck": true // Pula a verificação de tipos em arquivos de declaração (.d.ts)
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "drizzle.config.ts"
+  ]
 }
