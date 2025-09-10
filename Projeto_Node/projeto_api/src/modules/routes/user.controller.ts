@@ -1,12 +1,15 @@
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { UserService } from '../services/user.service'
+import { UserRepository } from '../repository/user.repository'
 import { request } from 'http'
 import { REPL_MODE_SLOPPY } from 'repl'
 
-// 1. Criamos uma instância do nosso service para que os handlers das rotas possam usá-la.
-const userService = new UserService()
-// 2. Definimos o schema do Zod como a FONTE ÚNICA DA VERDADE, fora das rotas.
+// 1. Criamos o "Chefe de Estoque"
+const userRepository = new UserRepository()
+// 2. Criamos o "Chef de Cozinha" e entregamos a ele o contato do Chefe de Estoque
+const userService = new UserService(userRepository)
+// 3. Definimos o schema do Zod como a FONTE ÚNICA DA VERDADE, fora das rotas.
 export const createUserBodySchema = z.object({
   name: z.string(),
   email: z.string().email('Formato de e-mail inválido.'),

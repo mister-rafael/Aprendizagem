@@ -2,41 +2,35 @@ import { db } from '../../db' // Importa nosso "tradutor-chefe"
 import { users } from '../../db/schema' // Importa a "planta" da tabela
 import { eq } from 'drizzle-orm' // Uma ferramenta do Drizzle para criar condições (ex: WHERE email = '...')
 import { CreateUserDTO, UpdateUserDTO } from '../routes/user.controller' // Importação do DTO (Data Transfer Object)
-
+import { UserRepository } from '../repository/user.repository'
 // Regras de negócios para os usuário.
 export class UserService {
-  // --- Método para buscar todos os usuários ---
+  // O Service agora DEPENDE de um repositório.
+  // Isso se chama Injeção de Dependência.
+  constructor(private userRepository: UserRepository) {}
+
+  // --- CONSULTA - Método para BUSCAR todos os usuários ---
   async getAll() {
-    // A mágica do Drizzle: é quase como ler uma frase em inglês.
-    // "Banco de dados, selecione tudo da tabela de usuários."
-    const allUsers = await db.select().from(users)
+    // Delega a tarefa para o repositório
+    const allUsers = await this.userRepository.findAll()
     return allUsers
   }
-  // --- Método para criar um novo usuário ---
+  // --- CREATE - Método para CRIAR um novo usuário ---
   async create(data: CreateUserDTO) {
     // 1. LÓGICA DE NEGÓCIO: Verificar se o e-mail já existe.
-    const existingUser = await db.query.users.findFirst({
-      where: eq(users.email, data.email),
-    })
+    // Quem faz é o repositório
+    const existingUser = await this.userRepository.findByEmail(data.email)
+  
     // Aciona o alarme de erro para que o tratador global atue.
     if (existingUser) {
       throw new Error('Este e-mail já está em uso.')
     }
     // 2. AÇÃO NO BANCO: Inserir o novo usuário.
-    const newUser = await db
-      .insert(users)
-      .values({
-        name: data.name,
-        email: data.email,
-        // Os campos createdAt e updatedAt serão preenchidos automaticamente
-        // pelo banco, graças ao `defaultNow()` que definimos no schema.
-      })
-      .returning() // Pede para o banco retornar o registro que acabou de ser criado.
-
-    // .returning() sempre devolve um array, então pegamos o primeiro elemento.
-    return newUser[0]
+    // Delega a tarefa de salvar para o repositório
+    const newUser = await this.userRepository.create(data)
+    return newUser
   }
-  // --- Método para atualizar um usuário ---
+  // --- UPDATE - Método para ATUALIZAR um usuário ---
   async update(id: number, data: UpdateUserDTO) {
     // 1. LÓGICA DE NEGÓCIO: Verificar se o usuário existe antes de atualizar.
     const userToUpdate = await db.query.users.findFirst({
@@ -58,7 +52,7 @@ export class UserService {
       .returning()
     return updateUser[0]
   }
-  // --- Método para deletar um usuário ---
+  // --- DELETE - Método para DELETAR um usuário ---
   async delete(id: number) {
     // 1. LÓGICA DE NEGÓCIO: Verificar se o usuário existe antes de deletar.
     const userToDelete = await db.query.users.findFirst({
